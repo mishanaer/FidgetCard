@@ -1,0 +1,86 @@
+# Обновления структуры
+
+## 2026-03-07
+- Реорганизована структура Swift-файлов без изменения логики приложения.
+- Точка входа перенесена в `FidgetCard/App/FidgetCardApp.swift`.
+- Главный экран перенесён в `FidgetCard/Features/Home/ContentView.swift`.
+- Экран модального отображения карточки перенесён в `FidgetCard/Features/CardPresentation/CardPresentationView.swift`.
+- SceneKit-компонент перенесён в `FidgetCard/Shared/Components/Rotating3DView.swift`.
+- Удалены побочные изменения `DEVELOPMENT_TEAM` из `FidgetCard.xcodeproj/project.pbxproj`, чтобы оставить минимальный дифф.
+- Кнопка закрытия в `FidgetCard/Features/CardPresentation/CardPresentationView.swift` переведена на системный toolbar-стиль (`NavigationStack` + `ToolbarItem`), удалены ручные размер/паддинги/кастомный buttonStyle.
+- В `FidgetCard/Features/Home/ContentView.swift` фон первого экрана заменён на `Color(.systemBackground)` для поддержки светлой/тёмной темы.
+- Кнопка `Show Card` переведена на системный Liquid Glass стиль: `.buttonStyle(.glass)` + `.buttonBorderShape(.capsule)`.
+- Для кнопки `Show Card` в `FidgetCard/Features/Home/ContentView.swift` добавлен размер `controlSize(.extraLarge)`.
+- Добавлен ассет `FidgetCard/Assets.xcassets/Document.imageset/Document.png` для текстуры карточки.
+- В `FidgetCard/Shared/Components/Rotating3DView.swift` соотношение сторон карточки теперь соответствует `Document.png` (`862:1165`).
+- Текстура `Document` назначена на фронтальную сторону прямоугольника.
+- Фронтальная и задняя стороны переведены на бумажный PBR-материал (metalness=0, высокая roughness); ребра тоже сделаны неметаллическими.
+- В `FidgetCard/Shared/Components/Rotating3DView.swift` добавлена модель `SceneControls` и runtime-обновление параметров через `Coordinator` + `updateUIView`.
+- В `FidgetCard/Features/CardPresentation/CardPresentationView.swift` добавлена панель контролов (slider/toggle) для камеры, света и material-параметров Front/Back/Edges.
+- В `SceneControls` по умолчанию отключен HDR (`wantsHDR = false`) для уменьшения пересвета документа.
+- Из сцены удалён `omni`-источник света: оставлен только `ambient`.
+- Из `SceneControls` удалены параметры `omniIntensity/omniX/omniY/omniZ`.
+- Из панели контролов света удалены Omni-слайдеры; оставлен только `Ambient Intensity`.
+- В `FidgetCard/Shared/Components/Rotating3DView.swift` размер карточки увеличен в 2 раза (масштабированы width/height/length/chamfer).
+- Удалён HDR из сцены (`wantsHDR` больше не используется в `Rotating3DView`).
+- Удалены все UI-контролы параметров сцены из `CardPresentationView`.
+- Толщина карточки уменьшена в 2 раза относительно предыдущего размера (`length` уменьшен вдвое).
+- Зафиксированы параметры света и материалов: `ambient intensity = 800`, для `front/back/edges` установлены `metalness = 0` и `roughness = 1`.
+- Для вертикальной орбиты добавлен мягкий лимит `±35°` с пружинным возвратом после свайпа и жёсткий лимит `±45°` в `Rotating3DView`.
+- Вертикальный свайп орбиты отключен: `minimumVerticalAngle` и `maximumVerticalAngle` зафиксированы в текущем угле камеры в `Rotating3DView`.
+- Для блокировки двухпальцевого перемещения в `Rotating3DView` отключены все `UIPanGestureRecognizer`, поддерживающие multi-touch (`minimumNumberOfTouches > 1` или `maximumNumberOfTouches > 1`).
+- Исправлена фильтрация pan-жестов: отключаются только `UIPanGestureRecognizer` с `minimumNumberOfTouches >= 2`; для one-finger pan зафиксирован `maximumNumberOfTouches = 1`.
+- Геометрия карточки обновлена: толщина увеличена в 2 раза, ширина/высота/скругление уменьшены на 30%, позиция карточки по Y смещена на `+100`.
+- Откат последних правок геометрии в `FidgetCard/Shared/Components/Rotating3DView.swift`: возвращены базовая толщина, исходный масштаб (`sizeScale = 1.0`) и позиция карточки по Y = `0`.
+- Размер модели снова уменьшен на 30%: в `FidgetCard/Shared/Components/Rotating3DView.swift` установлен `sizeScale = 0.7`.
+- Модель сдвинута вверх: `cardNode.position.y` изменён с `0` на `300` в `FidgetCard/Shared/Components/Rotating3DView.swift`.
+- Сцена в `Sheet` поднята вверх относительно интерфейса: для `Rotating3DView` в `FidgetCard/Features/CardPresentation/CardPresentationView.swift` добавлен `offset(y: -300)`.
+- Толщина карточки уменьшена в 2 раза: `length` изменён на `baseCardLength * 0.5` в `FidgetCard/Shared/Components/Rotating3DView.swift`.
+- В `FidgetCard/Features/CardPresentation/CardPresentationView.swift` добавлен нижний `footer`: `textStack` (заголовок + подзаголовок с отступом `16`) и кнопка `Download the Application` с `controlSize(.extraLarge)`.
+- `footer` закреплён у нижней границы экрана через `ZStack(alignment: .bottom)` и `padding(.bottom, 24)`.
+- В `FidgetCard/Features/CardPresentation/CardPresentationView.swift` обновлён `footer`: у подзаголовка задан `foregroundStyle(.secondary)`, кнопка `Download the Application` получила фиксированный размер `300x56` и фон `#FF0D2D` (скругление `28`).
+- Цвет фона кнопки `Download the Application` обновлён на `#FFDD2D` в `FidgetCard/Features/CardPresentation/CardPresentationView.swift`.
+- В `FidgetCard/Features/CardPresentation/CardPresentationView.swift` обновлены отступы: между заголовком и подзаголовком `12`, между `textStack` и кнопкой `20`.
+- Цвет текста кнопки `Download the Application` обновлён на `#333333` в `FidgetCard/Features/CardPresentation/CardPresentationView.swift`.
+- Стиль текста кнопки `Download the Application` обновлён на `17pt medium` в `FidgetCard/Features/CardPresentation/CardPresentationView.swift`.
+- Размер шторки в `FidgetCard/Features/CardPresentation/CardPresentationView.swift` переключён с `.large` на `.medium` через `presentationDetents([.medium])`.
+- В `FidgetCard/Features/CardPresentation/CardPresentationView.swift` добавлена логика нажатия кнопки `Download the Application`: анимация масштаба `1.0 -> 0.96 -> 1.0` без смены текста (`buttonStyle(.plain)`), затем закрытие шторки через `dismiss()`.
+- Логика нажатия кнопки `Download the Application` упрощена: убран отдельный `press state`, оставлен прямой сценарий `touch down -> scale 0.96`, `touch up -> scale 1.0` через `DragGesture(minimumDistance: 0)`; opacity текста не меняется (`buttonStyle(.plain)`).
+- Отступ между `textStack` и кнопкой в `footer` обновлён с `20` на `24` в `FidgetCard/Features/CardPresentation/CardPresentationView.swift`.
+- На главном экране в `FidgetCard/Features/Home/ContentView.swift` кнопка обновлена под параметры из `Sheet`: текст `Download the Application`, размер `300x56`, при этом сохранён стиль `Liquid Glass` (`buttonStyle(.glass)` + `buttonBorderShape(.capsule)`).
+- Кнопка на главном экране в `FidgetCard/Features/Home/ContentView.swift` прибита к низу, как в `Sheet`: `ZStack(alignment: .bottom)` + `padding(.bottom, 24)`.
+- Для корректного визуального размера `Liquid Glass` на главном экране в `FidgetCard/Features/Home/ContentView.swift` размер `300x56` перенесён в `label` кнопки (в `Text`), чтобы стиль рисовал капсулу по нужным габаритам.
+- Кнопка на главном экране переведена на системный стиль: убраны `Liquid Glass` и фиксированный размер, установлен системный `controlSize(.extraLarge)` + `buttonStyle(.borderedProminent)` в `FidgetCard/Features/Home/ContentView.swift`.
+- Текст системной кнопки на главном экране в `FidgetCard/Features/Home/ContentView.swift` изменён на `Open Sheet`.
+- Модель в `FidgetCard/Shared/Components/Rotating3DView.swift` увеличена на 10% относительно текущего состояния: `sizeScale` изменён `0.6 -> 0.66`, толщина `length` изменена `0.5 -> 0.55` (от `baseCardLength`).
+- В `Assets.xcassets` добавлены текстуры `TexFront.imageset` (из `Tex-Front.png`) и `TexBack.imageset` (из `Tex-Back.png`).
+- В `FidgetCard/Shared/Components/Rotating3DView.swift` фронтальная сторона карточки переведена на текстуру `TexFront`, задняя — на `TexBack` (с сохранением fallback-цвета для back при отсутствии ассета).
+- Торцы карточки в `FidgetCard/Shared/Components/Rotating3DView.swift` переведены на текстуру `TexBack` (с fallback-цветом при отсутствии ассета).
+- В `FidgetCard/Shared/Components/Rotating3DView.swift` увеличено скругление углов в 2 раза: `baseChamferRadius` изменён `0.03 -> 0.06`.
+- Геометрия карточки в `FidgetCard/Shared/Components/Rotating3DView.swift` переведена с `SCNBox` на `SCNShape` (`UIBezierPath` + `extrusionDepth`), чтобы скругление углов работало независимо от толщины; материалы сохранены как `front/back/side`.
+- В `FidgetCard/Shared/Components/Rotating3DView.swift` радиус скругления увеличен до `baseCornerRadius = 0.08`.
+- Торцы карточки в `FidgetCard/Shared/Components/Rotating3DView.swift` слегка затемнены без смены текстуры: добавлен `edgeMaterial.multiply.contents = UIColor(white: 0.9, alpha: 1.0)`.
+- В `FidgetCard/Shared/Components/Rotating3DView.swift` для one-finger `UIPanGestureRecognizer` добавлен `UIGestureRecognizerDelegate`: горизонтальные свайпы остаются для орбиты модели, вертикальные свайпы передаются системному drag шторки (dismiss вниз и bounce вверх).
+- В `FidgetCard/Shared/Components/Rotating3DView.swift` бесконечная авто-ротация заменена на одноразовый поворот `360°` при открытии `sheet` (`duration = 0.55`, `repeatCount = 1`, ключ `openSpin`).
+- В `FidgetCard/Shared/Components/Rotating3DView.swift` возвращён бесконечный `autoRotate` и добавлен дополнительный стартовый поворот `+369°` (`openSpin`) в том же направлении при открытии `sheet`.
+- В `FidgetCard/Shared/Components/Rotating3DView.swift` стартовый `openSpin` скорректирован с `369°` на `360°`.
+- В `FidgetCard/Shared/Components/Rotating3DView.swift` устранён рывок после стартового спина: связка двух `CAAnimation` заменена на последовательность `SCNAction` (`openSpin 360°` -> `repeatForever autoRotate`) для бесшовного продолжения вращения.
+- В `FidgetCard/Shared/Components/Rotating3DView.swift` параметры `openSpin` обновлены: длительность `0.6` и кривая `cubic ease-out` через кастомную `timingFunction`.
+- В `FidgetCard/Shared/Components/Rotating3DView.swift` добавлена интерполяция между `openSpin` и бесконечным `autoRotate`: переход `0.5s` с линейным изменением скорости от `8s/оборот` к `6s/оборот` через `SCNAction.customAction`.
+- Откат последнего изменения в `FidgetCard/Shared/Components/Rotating3DView.swift`: удалена интерполяция `0.5s` между `openSpin` и `autoRotate`, восстановлена прямая последовательность `openSpin (0.6, cubic ease-out) -> autoRotate (6s, linear, repeatForever)`.
+- Стартовый поворот при открытии `sheet` в `FidgetCard/Shared/Components/Rotating3DView.swift` изменён с `360°` на `320°` (`openSpin`: `.pi * (16.0 / 9.0)`), остальная анимационная цепочка без изменений.
+- Откат последнего изменения: стартовый `openSpin` в `FidgetCard/Shared/Components/Rotating3DView.swift` возвращён к `360°` (`.pi * 2`) вместо `320°`.
+- Добавлен ассет `FidgetCard/Assets.xcassets/BG.imageset` (`BG.png`) для фонового шейпа сцены.
+- В `FidgetCard/Shared/Components/Rotating3DView.swift` добавлен фоновый `SCNPlane` с текстурой `BG`; центр фоновой ноды строго совпадает с центром модели (`modelCenter` по `x/y/z`).
+- Фоновый `BG` убран из SceneKit (`FidgetCard/Shared/Components/Rotating3DView.swift`): удалены `SCNPlane` и связанные расчёты, чтобы фон не участвовал в 3D-сцене.
+- В `FidgetCard/Features/CardPresentation/CardPresentationView.swift` `BG` перенесён в отдельный статичный SwiftUI-слой под `Rotating3DView` (между моделью и фоном `sheet`), поэтому изображение не вращается вместе с моделью.
+- В `FidgetCard/Features/CardPresentation/CardPresentationView.swift` слой `BG` и `Rotating3DView` объединены в общий `ZStack` с единым `offset`, чтобы центр `BG` строго совпадал с центром шейпа модели.
+- Размер `BG` в `FidgetCard/Features/CardPresentation/CardPresentationView.swift` увеличен ровно в 4 раза: `260x260 -> 1040x1040`.
+- Откат последнего изменения: в `FidgetCard/Features/CardPresentation/CardPresentationView.swift` убран общий контейнер `BG + Rotating3DView` и возвращён предыдущий размер `BG` `260x260` с раздельным расположением слоёв.
+- Размер `BG` в `FidgetCard/Features/CardPresentation/CardPresentationView.swift` увеличен в 3 раза: `260x260 -> 780x780`.
+- В `FidgetCard/Features/CardPresentation/CardPresentationView.swift` `BG` переведён в абсолютный слой через `background` у `Rotating3DView`; изображение больше не участвует в layout `ZStack` и не влияет на размеры остальных элементов.
+- Размер `BG` в `FidgetCard/Features/CardPresentation/CardPresentationView.swift` изменён на `500x500`.
+- Размер `BG` в `FidgetCard/Features/CardPresentation/CardPresentationView.swift` изменён на `400x400`.
+- В `FidgetCard/Features/CardPresentation/CardPresentationView.swift` для `BG` добавлено непрерывное вращение по часовой стрелке: `360°` за `6s` (`linear`, `repeatForever`) — скорость синхронизирована с постоянной авто-ротацией модели.
+- Скорость вращения `BG` в `FidgetCard/Features/CardPresentation/CardPresentationView.swift` уменьшена в 2 раза: `360°` за `12s` вместо `6s`.
+- В `FidgetCard/Shared/Components/Rotating3DView.swift` направление вращения модели изменено на по часовой стрелке: у `openSpin` и `autoRotateStep` угол вокруг Y изменён с `+2π` на `-2π`.
