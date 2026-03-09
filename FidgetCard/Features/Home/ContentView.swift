@@ -19,10 +19,17 @@ struct ContentView: View {
                 showCard = true
             } label: {
                 Text("Open Sheet")
+                    .font(.system(size: 17, weight: .medium))
+                    .foregroundStyle(Color(red: 51.0 / 255.0, green: 51.0 / 255.0, blue: 51.0 / 255.0))
+                    .frame(width: 300, height: 56)
+                    .background(Color(red: 1.0, green: 221.0 / 255.0, blue: 45.0 / 255.0))
+                    .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
             }
-            .controlSize(.extraLarge)
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(ScaleButtonStyle())
             .padding(.bottom, 24)
+        }
+        .onAppear {
+            SceneCache.warmUp()
         }
         .sheet(isPresented: $showCard) {
             CardPresentationView()
