@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CardPresentationView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     @State private var downloadButtonScale: CGFloat = 1.0
     @State private var bgRotationDegrees: Double = 0
 
@@ -23,6 +24,7 @@ struct CardPresentationView: View {
                             .scaledToFit()
                             .frame(width: 400, height: 400)
                             .rotationEffect(.degrees(bgRotationDegrees))
+                            .opacity(colorScheme == .dark ? 0.1 : 1.0)
                             .allowsHitTesting(false)
                             .onAppear {
                                 bgRotationDegrees = 0
