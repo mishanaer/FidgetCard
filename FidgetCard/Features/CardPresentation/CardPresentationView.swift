@@ -10,7 +10,6 @@ import SwiftUI
 struct CardPresentationView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
-    @State private var downloadButtonScale: CGFloat = 1.0
     @State private var bgRotationDegrees: Double = 0
 
     var body: some View {
@@ -71,33 +70,19 @@ struct CardPresentationView: View {
         VStack(spacing: 24) {
             textStack
 
-            Button("Download the Application") {
+            Button {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
                     dismiss()
                 }
+            } label: {
+                Text("Download the Application")
+                    .font(.system(size: 17, weight: .medium))
+                    .foregroundStyle(Color(red: 51.0 / 255.0, green: 51.0 / 255.0, blue: 51.0 / 255.0))
+                    .frame(width: 300, height: 56)
+                    .background(Color(red: 1.0, green: 221.0 / 255.0, blue: 45.0 / 255.0))
+                    .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
             }
-                .font(.system(size: 17, weight: .medium))
-                .foregroundStyle(Color(red: 51.0 / 255.0, green: 51.0 / 255.0, blue: 51.0 / 255.0))
-                .frame(width: 300, height: 56)
-                .background(Color(red: 1.0, green: 221.0 / 255.0, blue: 45.0 / 255.0))
-                .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
-                .buttonStyle(.plain)
-                .scaleEffect(downloadButtonScale)
-                .simultaneousGesture(
-                    DragGesture(minimumDistance: 0)
-                        .onChanged { _ in
-                            if downloadButtonScale != 0.96 {
-                                withAnimation(.easeOut(duration: 0.08)) {
-                                    downloadButtonScale = 0.96
-                                }
-                            }
-                        }
-                        .onEnded { _ in
-                            withAnimation(.easeOut(duration: 0.12)) {
-                                downloadButtonScale = 1.0
-                            }
-                        }
-                )
+            .buttonStyle(ScaleButtonStyle())
         }
         .padding(.horizontal, 24)
     }

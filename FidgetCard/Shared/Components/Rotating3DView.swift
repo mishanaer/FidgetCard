@@ -1,6 +1,40 @@
 import SwiftUI
 import SceneKit
 
+enum SceneCache {
+    private static var cached: (scene: SCNScene, cameraNode: SCNNode, cardNode: SCNNode)?
+
+    static func warmUp() {
+        _ = shared
+    }
+
+    static var shared: (scene: SCNScene, cameraNode: SCNNode, cardNode: SCNNode) {
+        if let cached { return cached }
+        let result = Rotating3DView.buildScene()
+        cached = result
+        return result
+    }
+
+    static func restartAnimation() {
+        guard let cached else { return }
+        let cardNode = cached.cardNode
+        cardNode.removeAction(forKey: "spin")
+        cardNode.eulerAngles = SCNVector3Zero
+
+        let openSpin = SCNAction.rotateBy(x: 0, y: -.pi * 2, z: 0, duration: 0.6)
+        openSpin.timingFunction = { t in
+            let inverse = 1 - t
+            return 1 - inverse * inverse * inverse
+        }
+
+        let autoRotateStep = SCNAction.rotateBy(x: 0, y: -.pi * 2, z: 0, duration: 6)
+        autoRotateStep.timingMode = .linear
+        let autoRotate = SCNAction.repeatForever(autoRotateStep)
+
+        cardNode.runAction(.sequence([openSpin, autoRotate]), forKey: "spin")
+    }
+}
+
 struct Rotating3DView: UIViewRepresentable {
     func makeCoordinator() -> Coordinator {
         Coordinator()
@@ -8,9 +42,10 @@ struct Rotating3DView: UIViewRepresentable {
 
     func makeUIView(context: Context) -> SCNView {
         let scnView = SCNView()
-        let sceneSetup = makeScene()
+        let sceneSetup = SceneCache.shared
         scnView.scene = sceneSetup.scene
         scnView.pointOfView = sceneSetup.cameraNode
+        SceneCache.restartAnimation()
         scnView.backgroundColor = .clear
         scnView.antialiasingMode = .multisampling4X
         scnView.allowsCameraControl = true
@@ -61,7 +96,7 @@ struct Rotating3DView: UIViewRepresentable {
         }
     }
 
-    private func makeScene() -> (scene: SCNScene, cameraNode: SCNNode) {
+    static func buildScene() -> (scene: SCNScene, cameraNode: SCNNode, cardNode: SCNNode) {
         let scene = SCNScene()
 
         let frontTextureImage = UIImage(named: "TexFront")
@@ -126,19 +161,6 @@ struct Rotating3DView: UIViewRepresentable {
         // SCNShape extruded materials order: front, back, side
         card.materials = [frontMaterial, backMaterial, edgeMaterial]
 
-        // Opening spin, then seamless infinite rotation in the same direction.
-        let openSpin = SCNAction.rotateBy(x: 0, y: -.pi * 2, z: 0, duration: 0.6)
-        openSpin.timingFunction = { t in
-            let inverse = 1 - t
-            return 1 - inverse * inverse * inverse // cubic ease-out
-        }
-
-        let autoRotateStep = SCNAction.rotateBy(x: 0, y: -.pi * 2, z: 0, duration: 6)
-        autoRotateStep.timingMode = .linear
-        let autoRotate = SCNAction.repeatForever(autoRotateStep)
-
-        cardNode.runAction(.sequence([openSpin, autoRotate]), forKey: "spin")
-
         scene.rootNode.addChildNode(cardNode)
 
         // Camera
@@ -159,6 +181,6 @@ struct Rotating3DView: UIViewRepresentable {
         ambientNode.light?.intensity = 800
         scene.rootNode.addChildNode(ambientNode)
 
-        return (scene, cameraNode)
+        return (scene, cameraNode, cardNode)
     }
 }

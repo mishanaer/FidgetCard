@@ -10,7 +10,6 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var showCard = false
-    @State private var buttonScale: CGFloat = 1.0
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -20,26 +19,17 @@ struct ContentView: View {
                 showCard = true
             } label: {
                 Text("Open Sheet")
+                    .font(.system(size: 17, weight: .medium))
+                    .foregroundStyle(Color(red: 51.0 / 255.0, green: 51.0 / 255.0, blue: 51.0 / 255.0))
+                    .frame(width: 300, height: 56)
+                    .background(Color(red: 1.0, green: 221.0 / 255.0, blue: 45.0 / 255.0))
+                    .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
             }
-            .controlSize(.extraLarge)
-            .buttonStyle(.borderedProminent)
-            .scaleEffect(buttonScale)
-            .simultaneousGesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged { _ in
-                        if buttonScale != 0.96 {
-                            withAnimation(.easeOut(duration: 0.08)) {
-                                buttonScale = 0.96
-                            }
-                        }
-                    }
-                    .onEnded { _ in
-                        withAnimation(.easeOut(duration: 0.12)) {
-                            buttonScale = 1.0
-                        }
-                    }
-            )
+            .buttonStyle(ScaleButtonStyle())
             .padding(.bottom, 24)
+        }
+        .onAppear {
+            SceneCache.warmUp()
         }
         .sheet(isPresented: $showCard) {
             CardPresentationView()
