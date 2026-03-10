@@ -49,6 +49,9 @@ struct CardPresentationView: View {
                 }
             }
         }
+        .onAppear {
+            SceneCache.restartAnimation()
+        }
         .presentationDetents([.fraction(0.7)])
         .presentationDragIndicator(.visible)
         .presentationBackground(Color(.systemBackground))
@@ -56,10 +59,10 @@ struct CardPresentationView: View {
 
     private var textStack: some View {
         VStack(spacing: 12) {
-            Text("Application Prepared")
+            Text("Application is ready")
                 .font(.title2.weight(.semibold))
 
-            Text("Print it, sign it, and send it to your job")
+            Text("Print it and have your employer\nsign it at work")
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -67,19 +70,17 @@ struct CardPresentationView: View {
     }
 
     private var footer: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 32) {
             textStack
 
             Button {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
-                    dismiss()
-                }
+                dismiss()
             } label: {
                 Text("Download the Application")
                     .font(.system(size: 17, weight: .medium))
-                    .foregroundStyle(Color(red: 51.0 / 255.0, green: 51.0 / 255.0, blue: 51.0 / 255.0))
+                    .foregroundStyle(Color.brandText)
                     .frame(width: 300, height: 56)
-                    .background(Color(red: 1.0, green: 221.0 / 255.0, blue: 45.0 / 255.0))
+                    .background(Color.brandYellow)
                     .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
             }
             .buttonStyle(ScaleButtonStyle())
