@@ -21,9 +21,9 @@ struct CardPresentationView: View {
                         Image("BG")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 400, height: 400)
+                            .frame(width: 520, height: 520)
                             .rotationEffect(.degrees(bgRotationDegrees))
-                            .opacity(colorScheme == .dark ? 0.1 : 1.0)
+                            .opacity(colorScheme == .dark ? 0.07 : 0.8)
                             .allowsHitTesting(false)
                             .onAppear {
                                 bgRotationDegrees = 0
@@ -49,7 +49,7 @@ struct CardPresentationView: View {
                 }
             }
         }
-        .presentationDetents([.medium])
+        .presentationDetents([.fraction(0.7)])
         .presentationDragIndicator(.visible)
         .presentationBackground(Color(.systemBackground))
     }
