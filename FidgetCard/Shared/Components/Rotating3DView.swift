@@ -119,7 +119,7 @@ struct Rotating3DView: UIViewRepresentable {
         let baseCornerRadius: CGFloat = 0.05
         let cardWidth: CGFloat = baseCardWidth * cardScale * sizeScale
         let cardHeight: CGFloat = (baseCardWidth / documentAspectRatio) * cardScale * sizeScale
-        let cardThickness: CGFloat = baseCardLength * 1
+        let cardThickness: CGFloat = baseCardLength * 1.1
         let cardCornerRadius = min(
             baseCornerRadius * cardScale * sizeScale,
             min(cardWidth, cardHeight) * 0.5

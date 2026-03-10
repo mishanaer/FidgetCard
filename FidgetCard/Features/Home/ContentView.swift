@@ -20,9 +20,9 @@ struct ContentView: View {
             } label: {
                 Text("Open Sheet")
                     .font(.system(size: 17, weight: .medium))
-                    .foregroundStyle(Color(red: 51.0 / 255.0, green: 51.0 / 255.0, blue: 51.0 / 255.0))
+                    .foregroundStyle(Color.brandText)
                     .frame(width: 300, height: 56)
-                    .background(Color(red: 1.0, green: 221.0 / 255.0, blue: 45.0 / 255.0))
+                    .background(Color.brandYellow)
                     .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
             }
             .buttonStyle(ScaleButtonStyle())
